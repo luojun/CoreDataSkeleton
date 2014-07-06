@@ -17,6 +17,9 @@
 + (NSManagedObjectContext *)defaultMainContext;
 + (NSManagedObjectContext *)tempContext;
 
++ (void)saveMainContext:(NSManagedObjectContext *)mainContext;
++ (void)saveTempContext:(NSManagedObjectContext *)tempContext;
+
 + (BOOL)itemExistsWithValue:(NSString *)value forAttribute:(NSString *)attributeName inEntity:(NSString *)entityName forContext:(NSManagedObjectContext *)context;
 
 @end

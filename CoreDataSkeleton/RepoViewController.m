@@ -6,15 +6,15 @@
 //  Copyright (c) 2014 Jun Luo. All rights reserved.
 //
 
-#import "DetailViewController.h"
+#import "RepoViewController.h"
 
-@interface DetailViewController ()
+@interface RepoViewController ()
             
 @property (strong, nonatomic) UIPopoverController *masterPopoverController;
 
 @end
 
-@implementation DetailViewController
+@implementation RepoViewController
             
 #pragma mark - Managing the detail item
 
