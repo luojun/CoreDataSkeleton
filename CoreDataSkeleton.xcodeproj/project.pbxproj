@@ -10,8 +10,8 @@
 		BFEFE013196772CF00CC9951 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BFEFE012196772CF00CC9951 /* main.m */; };
 		BFEFE016196772CF00CC9951 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BFEFE015196772CF00CC9951 /* AppDelegate.m */; };
 		BFEFE019196772CF00CC9951 /* CoreDataSkeleton.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = BFEFE017196772CF00CC9951 /* CoreDataSkeleton.xcdatamodeld */; };
-		BFEFE01C196772CF00CC9951 /* MasterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BFEFE01B196772CF00CC9951 /* MasterViewController.m */; };
-		BFEFE01F196772CF00CC9951 /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BFEFE01E196772CF00CC9951 /* DetailViewController.m */; };
+		BFEFE01C196772CF00CC9951 /* UserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BFEFE01B196772CF00CC9951 /* UserViewController.m */; };
+		BFEFE01F196772CF00CC9951 /* RepoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BFEFE01E196772CF00CC9951 /* RepoViewController.m */; };
 		BFEFE022196772CF00CC9951 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BFEFE020196772CF00CC9951 /* Main.storyboard */; };
 		BFEFE024196772CF00CC9951 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BFEFE023196772CF00CC9951 /* Images.xcassets */; };
 		BFEFE030196772CF00CC9951 /* CoreDataSkeletonTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BFEFE02F196772CF00CC9951 /* CoreDataSkeletonTests.m */; };
@@ -35,10 +35,10 @@
 		BFEFE014196772CF00CC9951 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		BFEFE015196772CF00CC9951 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		BFEFE018196772CF00CC9951 /* CoreDataSkeleton.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CoreDataSkeleton.xcdatamodel; sourceTree = "<group>"; };
-		BFEFE01A196772CF00CC9951 /* MasterViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MasterViewController.h; sourceTree = "<group>"; };
-		BFEFE01B196772CF00CC9951 /* MasterViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MasterViewController.m; sourceTree = "<group>"; };
-		BFEFE01D196772CF00CC9951 /* DetailViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
-		BFEFE01E196772CF00CC9951 /* DetailViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
+		BFEFE01A196772CF00CC9951 /* UserViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UserViewController.h; sourceTree = "<group>"; };
+		BFEFE01B196772CF00CC9951 /* UserViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UserViewController.m; sourceTree = "<group>"; };
+		BFEFE01D196772CF00CC9951 /* RepoViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RepoViewController.h; sourceTree = "<group>"; };
+		BFEFE01E196772CF00CC9951 /* RepoViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RepoViewController.m; sourceTree = "<group>"; };
 		BFEFE021196772CF00CC9951 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		BFEFE023196772CF00CC9951 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		BFEFE029196772CF00CC9951 /* CoreDataSkeletonTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CoreDataSkeletonTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -89,10 +89,10 @@
 			children = (
 				BFEFE014196772CF00CC9951 /* AppDelegate.h */,
 				BFEFE015196772CF00CC9951 /* AppDelegate.m */,
-				BFEFE01A196772CF00CC9951 /* MasterViewController.h */,
-				BFEFE01B196772CF00CC9951 /* MasterViewController.m */,
-				BFEFE01D196772CF00CC9951 /* DetailViewController.h */,
-				BFEFE01E196772CF00CC9951 /* DetailViewController.m */,
+				BFEFE01A196772CF00CC9951 /* UserViewController.h */,
+				BFEFE01B196772CF00CC9951 /* UserViewController.m */,
+				BFEFE01D196772CF00CC9951 /* RepoViewController.h */,
+				BFEFE01E196772CF00CC9951 /* RepoViewController.m */,
 				BFEFE020196772CF00CC9951 /* Main.storyboard */,
 				BFEFE023196772CF00CC9951 /* Images.xcassets */,
 				BFEFE017196772CF00CC9951 /* CoreDataSkeleton.xcdatamodeld */,
@@ -229,8 +229,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				BFEFE081196980B600CC9951 /* CoreDataManager.m in Sources */,
-				BFEFE01F196772CF00CC9951 /* DetailViewController.m in Sources */,
-				BFEFE01C196772CF00CC9951 /* MasterViewController.m in Sources */,
+				BFEFE01F196772CF00CC9951 /* RepoViewController.m in Sources */,
+				BFEFE01C196772CF00CC9951 /* UserViewController.m in Sources */,
 				BFEFE019196772CF00CC9951 /* CoreDataSkeleton.xcdatamodeld in Sources */,
 				BFEFE016196772CF00CC9951 /* AppDelegate.m in Sources */,
 				BFEFE013196772CF00CC9951 /* main.m in Sources */,
@@ -422,6 +422,7 @@
 				BFEFE035196772CF00CC9951 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		BFEFE036196772CF00CC9951 /* Build configuration list for PBXNativeTarget "CoreDataSkeletonTests" */ = {
 			isa = XCConfigurationList;
@@ -430,6 +431,7 @@
 				BFEFE038196772CF00CC9951 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 

@@ -7,7 +7,7 @@
 //
 
 #import "AppDelegate.h"
-#import "MasterViewController.h"
+#import "UserViewController.h"
 #import "CoreDataManager.h"
 
 @interface AppDelegate ()
@@ -24,7 +24,7 @@
     splitViewController.delegate = (id)navigationController.topViewController;
 
     UINavigationController *masterNavigationController = splitViewController.viewControllers[0];
-    MasterViewController *controller = (MasterViewController *)masterNavigationController.topViewController;
+    UserViewController *controller = (UserViewController *)masterNavigationController.topViewController;
 
     NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"CoreDataSkeleton" withExtension:@"momd"];
     NSURL *storeURL = [[AppDelegate applicationDocumentsDirectory] URLByAppendingPathComponent:@"CoreDataSkeleton.sqlite"];

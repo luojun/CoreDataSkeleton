@@ -6,16 +6,16 @@
 //  Copyright (c) 2014 Jun Luo. All rights reserved.
 //
 
-#import "MasterViewController.h"
-#import "DetailViewController.h"
+#import "UserViewController.h"
+#import "RepoViewController.h"
 #import "CoreDataManager.h"
 
-@interface MasterViewController ()
+@interface UserViewController ()
 
 
 @end
 
-@implementation MasterViewController
+@implementation UserViewController
 
 - (void)awakeFromNib {
     [super awakeFromNib];
@@ -32,7 +32,7 @@
     
     UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addNewUser:)];
     self.navigationItem.rightBarButtonItem = addButton;
-    self.detailViewController = (DetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
+    self.detailViewController = (RepoViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -56,8 +56,8 @@
     NSString *userName = [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     NSLog(@"Entered: %@", userName);
     
-    NSManagedObjectContext *context = self.fetchedResultsController.managedObjectContext;
-    if (![CoreDataManager itemExistsWithValue:userName forAttribute:@"userName" inEntity:@"User" forContext:context]) {
+    NSManagedObjectContext *mainContext = self.fetchedResultsController.managedObjectContext;
+    if (![CoreDataManager itemExistsWithValue:userName forAttribute:@"userName" inEntity:@"User" forContext:mainContext]) {
         static NSString * gitHubUsers = @"https://api.github.com/users/%@";
         NSURLSession *session = [NSURLSession sharedSession];
         [[session dataTaskWithURL:[NSURL URLWithString:[NSString stringWithFormat:gitHubUsers, userName]]
@@ -74,31 +74,19 @@
                         if (!jsonError) {
                             NSString *avatarURL = [userDic objectForKey:@"avatar_url"];
                             NSString *userEtag = [httpResponse.allHeaderFields objectForKey:@"ETag"];
-                            NSManagedObject *userObject = [NSEntityDescription insertNewObjectForEntityForName:@"User" inManagedObjectContext:context];
-                            [userObject setValue:userName forKey:@"userName"];
-                            [userObject setValue:avatarURL forKey:@"avatarURL"];
-                            [userObject setValue:userEtag forKey:@"userEtag"];
                             
-                            [context performBlock:^{
-                                NSError *error;
-                                if (![context save:&error]) {
-                                    NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-                                    abort();
-                                }
-                                
-                                [context.parentContext performBlock:^{
-                                    NSError *error = nil;
-                                    if (![context.parentContext save:&error]) {
-                                        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-                                        abort();
-                                    }
-                                }];
+                            NSManagedObjectContext *tempContext = [CoreDataManager tempContext];
+                            [tempContext performBlock:^{
+                                NSManagedObject *userObject = [NSEntityDescription insertNewObjectForEntityForName:@"User" inManagedObjectContext:tempContext];
+                                [userObject setValue:userName forKey:@"userName"];
+                                [userObject setValue:avatarURL forKey:@"avatarURL"];
+                                [userObject setValue:userEtag forKey:@"userEtag"];
+                            
+                                [CoreDataManager saveTempContext:tempContext];
                             }];
                         }
                     }
-                    
                 }] resume];
-        
     } else {
         UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"User exists" message:[NSString stringWithFormat:@"GitHub user %@ was already added!", userName] delegate:self cancelButtonTitle:@"Continue" otherButtonTitles:nil];
         [alert show];
@@ -111,7 +99,7 @@
     if ([[segue identifier] isEqualToString:@"showDetail"]) {
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
         NSManagedObject *object = [[self fetchedResultsController] objectAtIndexPath:indexPath];
-        [(DetailViewController *)[[segue destinationViewController] topViewController] setDetailItem:object];
+        [(RepoViewController *)[[segue destinationViewController] topViewController] setDetailItem:object];
     }
 }
 

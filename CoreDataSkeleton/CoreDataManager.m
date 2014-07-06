@@ -97,4 +97,38 @@ static NSManagedObjectContext *_defaultMainContext;
     return (count != 0);
 }
 
+
++ (void)saveMainContext:(NSManagedObjectContext *)mainContext
+{
+    NSAssert(mainContext == [CoreDataManager defaultMainContext], @"Context must be the default main context");
+    [mainContext performBlock:^{
+        NSError *error = nil;
+        if (![mainContext save:&error]) {
+            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+            abort();
+        }
+        
+        [mainContext.parentContext performBlock:^{
+            NSError *error = nil;
+            if (![mainContext.parentContext save:&error]) {
+                NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+                abort();
+            }
+        }];
+    }];
+}
+
++ (void)saveTempContext:(NSManagedObjectContext *)tempContext
+{
+    NSAssert(tempContext.parentContext == [CoreDataManager defaultMainContext], @"Temp context must be child of the default main context");
+    NSError *error = nil;
+    if (![tempContext save:&error]) {
+        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+        abort();
+    }
+    
+    [CoreDataManager saveMainContext:tempContext.parentContext];
+}
+
+
 @end
