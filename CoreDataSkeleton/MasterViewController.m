@@ -161,8 +161,16 @@
 
 - (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
     NSManagedObject *object = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    cell.textLabel.text = [[object valueForKey:@"userName"] description];
-    cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ - %@", [object valueForKey:@"avatarURL"], [object valueForKey:@"userEtag"]];
+    UILabel *userNameView = (UILabel *) [cell.contentView viewWithTag:1];
+    UIImageView *avatarView = (UIImageView *) [cell.contentView viewWithTag:2];
+    userNameView.text = [[object valueForKey:@"userName"] description];
+    NSURL *imageURL = [NSURL URLWithString:[object valueForKey:@"avatarURL"]];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            avatarView.image = [UIImage imageWithData:imageData];
+        });
+    });
 }
 
 #pragma mark - Fetched results controller
