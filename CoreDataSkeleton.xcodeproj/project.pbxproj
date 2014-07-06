@@ -15,6 +15,7 @@
 		BFEFE022196772CF00CC9951 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BFEFE020196772CF00CC9951 /* Main.storyboard */; };
 		BFEFE024196772CF00CC9951 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BFEFE023196772CF00CC9951 /* Images.xcassets */; };
 		BFEFE030196772CF00CC9951 /* CoreDataSkeletonTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BFEFE02F196772CF00CC9951 /* CoreDataSkeletonTests.m */; };
+		BFEFE081196980B600CC9951 /* CoreDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BFEFE080196980B600CC9951 /* CoreDataManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,6 +44,8 @@
 		BFEFE029196772CF00CC9951 /* CoreDataSkeletonTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CoreDataSkeletonTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BFEFE02E196772CF00CC9951 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BFEFE02F196772CF00CC9951 /* CoreDataSkeletonTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CoreDataSkeletonTests.m; sourceTree = "<group>"; };
+		BFEFE07F196980B600CC9951 /* CoreDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataManager.h; sourceTree = "<group>"; };
+		BFEFE080196980B600CC9951 /* CoreDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,6 +97,8 @@
 				BFEFE023196772CF00CC9951 /* Images.xcassets */,
 				BFEFE017196772CF00CC9951 /* CoreDataSkeleton.xcdatamodeld */,
 				BFEFE010196772CF00CC9951 /* Supporting Files */,
+				BFEFE07F196980B600CC9951 /* CoreDataManager.h */,
+				BFEFE080196980B600CC9951 /* CoreDataManager.m */,
 			);
 			path = CoreDataSkeleton;
 			sourceTree = "<group>";
@@ -223,6 +228,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BFEFE081196980B600CC9951 /* CoreDataManager.m in Sources */,
 				BFEFE01F196772CF00CC9951 /* DetailViewController.m in Sources */,
 				BFEFE01C196772CF00CC9951 /* MasterViewController.m in Sources */,
 				BFEFE019196772CF00CC9951 /* CoreDataSkeleton.xcdatamodeld in Sources */,
