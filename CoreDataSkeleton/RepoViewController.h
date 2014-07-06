@@ -7,10 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <CoreData/CoreData.h>
 
 @interface RepoViewController : UIViewController <UISplitViewControllerDelegate>
 
-@property (strong, nonatomic) id detailItem;
+@property (strong, nonatomic) NSManagedObject *detailObject;
 @property (weak, nonatomic) IBOutlet UILabel *detailDescriptionLabel;
 
 @end
