@@ -93,7 +93,7 @@
 }
 
 
-- (id)selectedItem
+- (NSManagedObject *)selectedObject
 {
     NSIndexPath* path = self.tableView.indexPathForSelectedRow;
     return path ? [self.fetchedResultsController objectAtIndexPath:path] : nil;

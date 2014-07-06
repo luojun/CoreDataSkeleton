@@ -125,7 +125,7 @@
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if ([[segue identifier] isEqualToString:@"showDetail"]) {
-        [(RepoViewController *)[[segue destinationViewController] topViewController] setDetailItem:self.fetcher.selectedItem];
+        [(RepoViewController *)[[segue destinationViewController] topViewController] setDetailObject:self.fetcher.selectedObject];
     }
 }
 

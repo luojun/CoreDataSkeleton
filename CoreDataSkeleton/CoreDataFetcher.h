@@ -24,6 +24,6 @@
 @property (nonatomic) BOOL paused;
 
 - (id)initWithTableView:(UITableView*)tableView;
-- (id)selectedItem;
+- (NSManagedObject *)selectedObject;
 
 @end
