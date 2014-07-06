@@ -35,7 +35,6 @@
 // and here: http://www.cocoanetics.com/2012/07/multi-context-coredata/, attributed to Marcus Zarra.
 // However, see http://floriankugler.com/blog/2013/4/29/concurrent-core-data-stack-performance-shootout for performance comparison.
 
-static CoreDataManager *_defaultManager;
 static NSManagedObjectModel *_defaultModel;
 static NSPersistentStoreCoordinator *_defaultSqliteCoordinator;
 static NSManagedObjectContext *_defaultWriterContext;
@@ -45,7 +44,6 @@ static NSManagedObjectContext *_defaultMainContext;
 {
     static dispatch_once_t once;
     dispatch_once(&once, ^{
-        _defaultManager = [[CoreDataManager alloc] initWithModelURL:modelURL storeURL:storeURL];
         _defaultModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
         _defaultSqliteCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:_defaultModel];
         NSError* error;
@@ -79,6 +77,7 @@ static NSManagedObjectContext *_defaultMainContext;
     return context;
 }
 
+#pragma mark - convenience
 
 + (BOOL)itemExistsWithValue:(NSString *)value forAttribute:(NSString *)attributeName inEntity:(NSString *)entityName forContext:(NSManagedObjectContext *)context
 {

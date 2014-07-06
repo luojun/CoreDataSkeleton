@@ -13,11 +13,8 @@
 
 @interface UserViewController : UITableViewController <NSFetchedResultsControllerDelegate>
 
-@property (strong, nonatomic) RepoViewController *detailViewController;
-
+@property (strong, nonatomic) RepoViewController *repoViewController;
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
-@property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
-
 
 @end
 

@@ -9,13 +9,17 @@
 #import "UserViewController.h"
 #import "RepoViewController.h"
 #import "CoreDataManager.h"
+#import "CoreDataFetcher.h"
 
-@interface UserViewController ()
+@interface UserViewController () <CoreDataFetcherDelegate>
 
+@property (nonatomic, strong) CoreDataFetcher* fetcher;
 
 @end
 
 @implementation UserViewController
+
+#pragma mark - life cycle
 
 - (void)awakeFromNib {
     [super awakeFromNib];
@@ -27,18 +31,38 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
     self.navigationItem.leftBarButtonItem = self.editButtonItem;
     
     UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addNewUser:)];
     self.navigationItem.rightBarButtonItem = addButton;
-    self.detailViewController = (RepoViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
+    self.repoViewController = (RepoViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
+    
+    [self setupFetcher];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    self.fetcher.paused = NO;
 }
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    self.fetcher.paused = YES;
+}
+
+#pragma mark - set up
+
+- (void)setupFetcher
+{
+    self.fetcher = [[CoreDataFetcher alloc] initWithTableView:self.tableView];
+    self.fetcher.fetchedResultsController = self.fetchedResultsController;
+    self.fetcher.delegate = self;
+    self.fetcher.reuseIdentifier = @"Cell";
+}
+
+#pragma mark - add GitHub user
 
 - (void)addNewUser:(id)sender {
     UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"Add a GitHub User" message:nil delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"OK", nil];
@@ -55,7 +79,11 @@
     NSString * text= [alertView textFieldAtIndex:0].text;
     NSString *userName = [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     NSLog(@"Entered: %@", userName);
-    
+    [self createNewUser:userName];
+}
+
+- (void)createNewUser:(NSString *)userName
+{
     NSManagedObjectContext *mainContext = self.fetchedResultsController.managedObjectContext;
     if (![CoreDataManager itemExistsWithValue:userName forAttribute:@"userName" inEntity:@"User" forContext:mainContext]) {
         static NSString * gitHubUsers = @"https://api.github.com/users/%@";
@@ -81,7 +109,7 @@
                                 [userObject setValue:userName forKey:@"userName"];
                                 [userObject setValue:avatarURL forKey:@"avatarURL"];
                                 [userObject setValue:userEtag forKey:@"userEtag"];
-                            
+                                
                                 [CoreDataManager saveTempContext:tempContext];
                             }];
                         }
@@ -93,62 +121,18 @@
     }
 }
 
-#pragma mark - Segues
+#pragma mark - segues
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     if ([[segue identifier] isEqualToString:@"showDetail"]) {
-        NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-        NSManagedObject *object = [[self fetchedResultsController] objectAtIndexPath:indexPath];
-        [(RepoViewController *)[[segue destinationViewController] topViewController] setDetailItem:object];
+        [(RepoViewController *)[[segue destinationViewController] topViewController] setDetailItem:self.fetcher.selectedItem];
     }
 }
 
-#pragma mark - Table View
+#pragma mark - fetcher delegate
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return [[self.fetchedResultsController sections] count];
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    id <NSFetchedResultsSectionInfo> sectionInfo = [self.fetchedResultsController sections][section];
-    return [sectionInfo numberOfObjects];
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
-    [self configureCell:cell atIndexPath:indexPath];
-    return cell;
-}
-
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        NSManagedObjectContext *context = [self.fetchedResultsController managedObjectContext];
-        [context deleteObject:[self.fetchedResultsController objectAtIndexPath:indexPath]];
-        
-        NSError *error = nil;
-        if (![context save:&error]) {
-            // Replace this implementation with code to handle the error appropriately.
-            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-            abort();
-        }
-    }
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        NSManagedObject *object = [[self fetchedResultsController] objectAtIndexPath:indexPath];
-        self.detailViewController.detailItem = object;
-    }
-}
-
-- (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
-    NSManagedObject *object = [self.fetchedResultsController objectAtIndexPath:indexPath];
+- (void)configureCell:(UITableViewCell *)cell withObject:(id)object
+{
     UILabel *userNameView = (UILabel *) [cell.contentView viewWithTag:1];
     UIImageView *avatarView = (UIImageView *) [cell.contentView viewWithTag:2];
     userNameView.text = [[object valueForKey:@"userName"] description];
@@ -161,7 +145,14 @@
     });
 }
 
-#pragma mark - Fetched results controller
+- (void)deleteObject:(NSManagedObject *)object
+{
+    NSString* actionName = [NSString stringWithFormat:NSLocalizedString(@"Delete \"%@\"", @"Delete undo action name"), [object valueForKey:@"userName"]];
+    [self.undoManager setActionName:actionName];
+    [object.managedObjectContext deleteObject:object];
+}
+
+#pragma mark - fetched results controller
 
 - (NSFetchedResultsController *)fetchedResultsController
 {
@@ -169,22 +160,19 @@
         return _fetchedResultsController;
     }
     
+    NSManagedObjectContext *mainContext = [CoreDataManager defaultMainContext];
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    // Edit the entity name as appropriate.
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"User" inManagedObjectContext:self.managedObjectContext];
+
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"User" inManagedObjectContext:mainContext];
     [fetchRequest setEntity:entity];
     
-    // Set the batch size to a suitable number.
     [fetchRequest setFetchBatchSize:20];
     
-    // Edit the sort key as appropriate.
     NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"userName" ascending:YES];
     NSArray *sortDescriptors = @[sortDescriptor];
     [fetchRequest setSortDescriptors:sortDescriptors];
     
-    // Edit the section name key path and cache name if appropriate.
-    // nil for section name key path means "no sections".
-    NSFetchedResultsController *aFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:self.managedObjectContext sectionNameKeyPath:nil cacheName:@"Master"];
+    NSFetchedResultsController *aFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:mainContext sectionNameKeyPath:nil cacheName:@"Master"];
     aFetchedResultsController.delegate = self;
     self.fetchedResultsController = aFetchedResultsController;
     
@@ -198,64 +186,15 @@
     return _fetchedResultsController;
 }
 
-- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller
-{
-    [self.tableView beginUpdates];
+#pragma mark - undo
+
+- (BOOL)canBecomeFirstResponder {
+    return YES;
 }
 
-- (void)controller:(NSFetchedResultsController *)controller didChangeSection:(id <NSFetchedResultsSectionInfo>)sectionInfo
-           atIndex:(NSUInteger)sectionIndex forChangeType:(NSFetchedResultsChangeType)type
+- (NSUndoManager*)undoManager
 {
-    switch(type) {
-        case NSFetchedResultsChangeInsert:
-            [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationFade];
-            break;
-            
-        case NSFetchedResultsChangeDelete:
-            [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex] withRowAnimation:UITableViewRowAnimationFade];
-            break;
-    }
+    return [CoreDataManager defaultMainContext].undoManager;
 }
-
-- (void)controller:(NSFetchedResultsController *)controller didChangeObject:(id)anObject
-       atIndexPath:(NSIndexPath *)indexPath forChangeType:(NSFetchedResultsChangeType)type
-      newIndexPath:(NSIndexPath *)newIndexPath
-{
-    UITableView *tableView = self.tableView;
-    
-    switch(type) {
-        case NSFetchedResultsChangeInsert:
-            [tableView insertRowsAtIndexPaths:@[newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
-            break;
-            
-        case NSFetchedResultsChangeDelete:
-            [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-            break;
-            
-        case NSFetchedResultsChangeUpdate:
-            [self configureCell:[tableView cellForRowAtIndexPath:indexPath] atIndexPath:indexPath];
-            break;
-            
-        case NSFetchedResultsChangeMove:
-            [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-            [tableView insertRowsAtIndexPaths:@[newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
-            break;
-    }
-}
-
-- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
-{
-    [self.tableView endUpdates];
-}
-
-/*
- // Implementing the above methods to update the table view in response to individual changes may have performance implications if a large number of changes are made simultaneously. If this proves to be an issue, you can instead just implement controllerDidChangeContent: which notifies the delegate that all section and object changes have been processed.
- 
- - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
- {
- // In the simplest, most efficient, case, reload the table view.
- [self.tableView reloadData];
- }
- */
 
 @end

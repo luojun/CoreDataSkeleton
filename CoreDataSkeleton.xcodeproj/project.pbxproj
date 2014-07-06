@@ -16,6 +16,7 @@
 		BFEFE024196772CF00CC9951 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BFEFE023196772CF00CC9951 /* Images.xcassets */; };
 		BFEFE030196772CF00CC9951 /* CoreDataSkeletonTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BFEFE02F196772CF00CC9951 /* CoreDataSkeletonTests.m */; };
 		BFEFE081196980B600CC9951 /* CoreDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BFEFE080196980B600CC9951 /* CoreDataManager.m */; };
+		BFFD4AA0196A02B0004B0BCC /* CoreDataFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = BFFD4A9F196A02B0004B0BCC /* CoreDataFetcher.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,6 +47,8 @@
 		BFEFE02F196772CF00CC9951 /* CoreDataSkeletonTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CoreDataSkeletonTests.m; sourceTree = "<group>"; };
 		BFEFE07F196980B600CC9951 /* CoreDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataManager.h; sourceTree = "<group>"; };
 		BFEFE080196980B600CC9951 /* CoreDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataManager.m; sourceTree = "<group>"; };
+		BFFD4A9E196A02B0004B0BCC /* CoreDataFetcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataFetcher.h; sourceTree = "<group>"; };
+		BFFD4A9F196A02B0004B0BCC /* CoreDataFetcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataFetcher.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +102,8 @@
 				BFEFE010196772CF00CC9951 /* Supporting Files */,
 				BFEFE07F196980B600CC9951 /* CoreDataManager.h */,
 				BFEFE080196980B600CC9951 /* CoreDataManager.m */,
+				BFFD4A9E196A02B0004B0BCC /* CoreDataFetcher.h */,
+				BFFD4A9F196A02B0004B0BCC /* CoreDataFetcher.m */,
 			);
 			path = CoreDataSkeleton;
 			sourceTree = "<group>";
@@ -231,6 +236,7 @@
 				BFEFE081196980B600CC9951 /* CoreDataManager.m in Sources */,
 				BFEFE01F196772CF00CC9951 /* RepoViewController.m in Sources */,
 				BFEFE01C196772CF00CC9951 /* UserViewController.m in Sources */,
+				BFFD4AA0196A02B0004B0BCC /* CoreDataFetcher.m in Sources */,
 				BFEFE019196772CF00CC9951 /* CoreDataSkeleton.xcdatamodeld in Sources */,
 				BFEFE016196772CF00CC9951 /* AppDelegate.m in Sources */,
 				BFEFE013196772CF00CC9951 /* main.m in Sources */,
