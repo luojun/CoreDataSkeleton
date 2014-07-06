@@ -18,18 +18,17 @@
 @implementation AppDelegate
             
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
+    // this set up needs to happen first
+    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"CoreDataSkeleton" withExtension:@"momd"];
+    NSURL *storeURL = [[AppDelegate applicationDocumentsDirectory] URLByAppendingPathComponent:@"CoreDataSkeleton.sqlite"];
+    [CoreDataManager setupDefaultsWithModelURL:modelURL storeURL:storeURL];
+    
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
     UINavigationController *navigationController = [splitViewController.viewControllers lastObject];
     splitViewController.delegate = (id)navigationController.topViewController;
 
-    UINavigationController *masterNavigationController = splitViewController.viewControllers[0];
-    UserViewController *controller = (UserViewController *)masterNavigationController.topViewController;
+    application.applicationSupportsShakeToEdit = YES;
 
-    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"CoreDataSkeleton" withExtension:@"momd"];
-    NSURL *storeURL = [[AppDelegate applicationDocumentsDirectory] URLByAppendingPathComponent:@"CoreDataSkeleton.sqlite"];
-    [CoreDataManager setupDefaultsWithModelURL:modelURL storeURL:storeURL];
-    controller.managedObjectContext = [CoreDataManager defaultMainContext];
     return YES;
 }
 
