@@ -58,20 +58,47 @@
     
     NSManagedObjectContext *context = self.fetchedResultsController.managedObjectContext;
     if (![CoreDataManager itemExistsWithValue:userName forAttribute:@"userName" inEntity:@"User" forContext:context]) {
-        NSManagedObject *userObject = [NSEntityDescription insertNewObjectForEntityForName:@"User" inManagedObjectContext:context];
-        [userObject setValue:userName forKey:@"userName"];
-        NSError *error = nil;
-        if (![context save:&error]) {
-            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-            abort();
-        }
-        [context performBlock:^{
-            NSError *error = nil;
-            if (![context.parentContext save:&error]) {
-                NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-                abort();
-            }
-        }];
+        static NSString * gitHubUsers = @"https://api.github.com/users/%@";
+        NSURLSession *session = [NSURLSession sharedSession];
+        [[session dataTaskWithURL:[NSURL URLWithString:[NSString stringWithFormat:gitHubUsers, userName]]
+                completionHandler:^(NSData *data,
+                                    NSURLResponse *response,
+                                    NSError *error) {
+                    
+                    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+                    if (httpResponse.statusCode == 200) {
+                        NSError *jsonError;
+                        NSDictionary *userDic = [NSJSONSerialization JSONObjectWithData:data
+                                                                                options:NSJSONReadingAllowFragments
+                                                                                  error:&jsonError];
+                        if (!jsonError) {
+                            NSString *avatarURL = [userDic objectForKey:@"avatar_url"];
+                            NSString *userEtag = [httpResponse.allHeaderFields objectForKey:@"ETag"];
+                            NSManagedObject *userObject = [NSEntityDescription insertNewObjectForEntityForName:@"User" inManagedObjectContext:context];
+                            [userObject setValue:userName forKey:@"userName"];
+                            [userObject setValue:avatarURL forKey:@"avatarURL"];
+                            [userObject setValue:userEtag forKey:@"userEtag"];
+                            
+                            [context performBlock:^{
+                                NSError *error;
+                                if (![context save:&error]) {
+                                    NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+                                    abort();
+                                }
+                                
+                                [context.parentContext performBlock:^{
+                                    NSError *error = nil;
+                                    if (![context.parentContext save:&error]) {
+                                        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+                                        abort();
+                                    }
+                                }];
+                            }];
+                        }
+                    }
+                    
+                }] resume];
+        
     } else {
         UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"User exists" message:[NSString stringWithFormat:@"GitHub user %@ was already added!", userName] delegate:self cancelButtonTitle:@"Continue" otherButtonTitles:nil];
         [alert show];
@@ -135,6 +162,7 @@
 - (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
     NSManagedObject *object = [self.fetchedResultsController objectAtIndexPath:indexPath];
     cell.textLabel.text = [[object valueForKey:@"userName"] description];
+    cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ - %@", [object valueForKey:@"avatarURL"], [object valueForKey:@"userEtag"]];
 }
 
 #pragma mark - Fetched results controller
