@@ -84,6 +84,16 @@
                 NSManagedObjectContext *tempContext = [CoreDataManager tempContext];
                 NSManagedObject * userInContext = [tempContext objectWithID:user.objectID];
                 [tempContext performBlock:^{
+                    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+                    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Repo" inManagedObjectContext:tempContext];
+                    request.entity = entity;
+                    request.predicate = [NSPredicate predicateWithFormat:@"user == %@", userInContext];
+                    NSArray *oldRepos = [tempContext executeFetchRequest:request error:nil];
+                    for (NSManagedObject *oldRepo in oldRepos) {
+                        [tempContext deleteObject:oldRepo];
+                        [CoreDataManager saveTempContext:tempContext];
+                    }
+
                     for (NSDictionary *repo in repos) {
                         NSManagedObject *repoObject = [NSEntityDescription insertNewObjectForEntityForName:@"Repo" inManagedObjectContext:tempContext];
                         [repoObject setValue:userInContext forKey:@"user"];
