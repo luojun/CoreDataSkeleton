@@ -77,7 +77,6 @@
         [self.tableView insertRowsAtIndexPaths:@[newIndexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
     } else if (type == NSFetchedResultsChangeUpdate) {
         [self.delegate configureCell:[self.tableView cellForRowAtIndexPath:indexPath] withObject:anObject];
-        [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
     } else if (type == NSFetchedResultsChangeMove) {
         [self.tableView moveRowAtIndexPath:indexPath toIndexPath:newIndexPath];
     } else if (type == NSFetchedResultsChangeDelete) {

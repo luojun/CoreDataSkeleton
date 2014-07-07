@@ -52,6 +52,7 @@ static NSManagedObjectContext *_defaultMainContext;
         _defaultWriterContext.persistentStoreCoordinator = _defaultSqliteCoordinator;
         _defaultMainContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
         _defaultMainContext.parentContext = _defaultWriterContext;
+        _defaultMainContext.undoManager = [[NSUndoManager alloc] init];
     });
 }
 

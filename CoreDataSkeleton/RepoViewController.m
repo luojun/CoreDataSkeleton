@@ -104,6 +104,15 @@
                     [CoreDataManager saveTempContext:tempContext];
                 }];
             }
+        } else {
+            UIAlertView * alert = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Server responded with %d", httpResponse.statusCode]
+                                                             message:[[NSJSONSerialization JSONObjectWithData:data
+                                                                                                      options:NSJSONReadingAllowFragments
+                                                                                                        error:nil] description]
+                                                            delegate:self
+                                                   cancelButtonTitle:@"Continue"
+                                                   otherButtonTitles:nil];
+            [alert show];
         }
     }] resume];
 }
