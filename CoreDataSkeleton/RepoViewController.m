@@ -110,8 +110,8 @@
                         [repoObject setValue:[repo valueForKey:@"stargazers_count"] forKey:@"starCount"];
                         [repoObject setValue:[repo valueForKey:@"watchers_count"] forKey:@"watcherCount"];
                         [repoObject setValue:[repo valueForKey:@"clone_url"] forKey:@"cloneUrl"];
-                        [repoObject setValue:[repo valueForKey:@"updated_at"] forKey:@"createDate"];
-                        [repoObject setValue:[repo valueForKey:@"created_at"] forKey:@"updateDate"];
+                        [repoObject setValue:[repo valueForKey:@"updated_at"] forKey:@"updateDate"];
+                        [repoObject setValue:[repo valueForKey:@"created_at"] forKey:@"createDate"];
                         
                         [CoreDataManager saveTempContext:tempContext];
                     };
