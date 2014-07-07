@@ -83,7 +83,13 @@
             if (!jsonError) {
                 NSManagedObjectContext *tempContext = [CoreDataManager tempContext];
                 [tempContext performBlock:^{
-                    NSManagedObject * userInContext = [tempContext objectWithID:user.objectID];
+                    NSFetchRequest *userRequest = [[NSFetchRequest alloc] init];
+                    NSEntityDescription *userEntity = [NSEntityDescription entityForName:@"User" inManagedObjectContext:tempContext];
+                    userRequest.entity = userEntity;
+                    userRequest.predicate = [NSPredicate predicateWithFormat:@"userName == %@", [user valueForKey:@"userName"]];
+                    userRequest.fetchLimit = 1;
+                    NSManagedObject *userInContext = [[tempContext executeFetchRequest:userRequest error:nil] objectAtIndex:0];
+
                     NSFetchRequest *request = [[NSFetchRequest alloc] init];
                     NSEntityDescription *entity = [NSEntityDescription entityForName:@"Repo" inManagedObjectContext:tempContext];
                     request.entity = entity;
