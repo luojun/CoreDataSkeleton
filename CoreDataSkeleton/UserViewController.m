@@ -113,6 +113,15 @@
                                 [CoreDataManager saveTempContext:tempContext];
                             }];
                         }
+                    } else {
+                        UIAlertView * alert = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Server responded with %d", httpResponse.statusCode]
+                                                                         message:[[NSJSONSerialization JSONObjectWithData:data
+                                                                                                                 options:NSJSONReadingAllowFragments
+                                                                                                                   error:nil] description]
+                                                                        delegate:self
+                                                               cancelButtonTitle:@"Continue"
+                                                               otherButtonTitles:nil];
+                        [alert show];
                     }
                 }] resume];
     } else {
@@ -171,7 +180,7 @@
     NSArray *sortDescriptors = @[sortDescriptor];
     request.sortDescriptors = sortDescriptors;
     
-    NSFetchedResultsController *controller = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:mainContext sectionNameKeyPath:nil cacheName:@"User"];
+    NSFetchedResultsController *controller = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:mainContext sectionNameKeyPath:nil cacheName:nil];
     _fetchedResultsController = controller;
 
     return _fetchedResultsController;
