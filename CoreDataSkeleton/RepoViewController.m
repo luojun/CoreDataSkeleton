@@ -64,6 +64,7 @@
 - (void)refreshRepoForUser:(NSManagedObject *)user
 {
     static NSString * gitHubReposForUser = @"https://api.github.com/users/%@/repos";
+    NSString *userName = [user valueForKey:@"userName"];
     NSURLSession *session = [NSURLSession sharedSession];
     [[session dataTaskWithURL:[NSURL URLWithString:[NSString stringWithFormat:gitHubReposForUser, [user valueForKey:@"userName"]]] completionHandler:^(NSData *data,
                                                                                                                                                        NSURLResponse *response,
@@ -83,13 +84,7 @@
             if (!jsonError) {
                 NSManagedObjectContext *tempContext = [CoreDataManager tempContext];
                 [tempContext performBlock:^{
-                    NSFetchRequest *userRequest = [[NSFetchRequest alloc] init];
-                    NSEntityDescription *userEntity = [NSEntityDescription entityForName:@"User" inManagedObjectContext:tempContext];
-                    userRequest.entity = userEntity;
-                    userRequest.predicate = [NSPredicate predicateWithFormat:@"userName == %@", [user valueForKey:@"userName"]];
-                    userRequest.fetchLimit = 1;
-                    NSManagedObject *userInContext = [[tempContext executeFetchRequest:userRequest error:nil] objectAtIndex:0];
-
+                    NSManagedObject *userInContext = [tempContext objectWithID:user.objectID];
                     NSFetchRequest *request = [[NSFetchRequest alloc] init];
                     NSEntityDescription *entity = [NSEntityDescription entityForName:@"Repo" inManagedObjectContext:tempContext];
                     request.entity = entity;
@@ -100,9 +95,11 @@
                         [CoreDataManager saveTempContext:tempContext];
                     }
 
+                    [userInContext setValue:userName forKey:@"userName"];
                     for (NSDictionary *repo in repos) {
                         NSManagedObject *repoObject = [NSEntityDescription insertNewObjectForEntityForName:@"Repo" inManagedObjectContext:tempContext];
                         [repoObject setValue:userInContext forKey:@"user"];
+                        [repoObject setValue:userName forKey:@"ownerLogin"];
                         [repoObject setValue:[repo valueForKey:@"id"] forKey:@"repoId"];
                         [repoObject setValue:[repo valueForKey:@"name"] forKey:@"repoName"];
                         [repoObject setValue:[repo valueForKey:@"description"] forKey:@"repoDescription"];

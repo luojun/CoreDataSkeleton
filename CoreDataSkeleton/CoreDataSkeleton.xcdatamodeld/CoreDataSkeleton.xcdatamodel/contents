@@ -4,13 +4,14 @@
         <attribute name="cloneUrl" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="createDate" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="forkCount" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="ownerLogin" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="repoDescription" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="repoId" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="repoName" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="starCount" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="updateDate" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="watcherCount" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
-        <relationship name="user" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="User" inverseName="repos" inverseEntity="User" syncable="YES"/>
+        <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="User" inverseName="repos" inverseEntity="User" syncable="YES"/>
     </entity>
     <entity name="User">
         <attribute name="avatarURL" optional="YES" attributeType="String" syncable="YES"/>
@@ -23,7 +24,7 @@
         <userInfo/>
     </entity>
     <elements>
-        <element name="Repo" positionX="261" positionY="216" width="128" height="195"/>
+        <element name="Repo" positionX="261" positionY="216" width="128" height="208"/>
         <element name="User" positionX="261" positionY="189" width="128" height="118"/>
     </elements>
 </model>
