@@ -82,8 +82,8 @@
                                                                error:&jsonError];
             if (!jsonError) {
                 NSManagedObjectContext *tempContext = [CoreDataManager tempContext];
-                NSManagedObject * userInContext = [tempContext objectWithID:user.objectID];
                 [tempContext performBlock:^{
+                    NSManagedObject * userInContext = [tempContext objectWithID:user.objectID];
                     NSFetchRequest *request = [[NSFetchRequest alloc] init];
                     NSEntityDescription *entity = [NSEntityDescription entityForName:@"Repo" inManagedObjectContext:tempContext];
                     request.entity = entity;
