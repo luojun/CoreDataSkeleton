@@ -103,14 +103,14 @@
                             NSString *avatarURL = [userDic objectForKey:@"avatar_url"];
                             NSString *userEtag = [httpResponse.allHeaderFields objectForKey:@"ETag"];
                             
-                            NSManagedObjectContext *tempContext = [CoreDataHelper tempContext];
-                            [tempContext performBlock:^{
-                                NSManagedObject *userObject = [NSEntityDescription insertNewObjectForEntityForName:@"User" inManagedObjectContext:tempContext];
+                            NSManagedObjectContext *workerContext = [CoreDataHelper workerContext];
+                            [workerContext performBlock:^{
+                                NSManagedObject *userObject = [NSEntityDescription insertNewObjectForEntityForName:@"User" inManagedObjectContext:workerContext];
                                 [userObject setValue:userName forKey:@"userName"];
                                 [userObject setValue:avatarURL forKey:@"avatarURL"];
                                 [userObject setValue:userEtag forKey:@"userEtag"];
                                 
-                                [CoreDataHelper saveTempContext:tempContext];
+                                [CoreDataHelper saveWorkerContext:workerContext];
                             }];
                         }
                     } else {

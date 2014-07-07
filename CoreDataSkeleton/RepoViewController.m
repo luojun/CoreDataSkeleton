@@ -82,22 +82,22 @@
                                                              options:NSJSONReadingAllowFragments
                                                                error:&jsonError];
             if (!jsonError) {
-                NSManagedObjectContext *tempContext = [CoreDataHelper tempContext];
-                [tempContext performBlock:^{
-                    NSManagedObject *userInContext = [tempContext objectWithID:user.objectID];
+                NSManagedObjectContext *workerContext = [CoreDataHelper workerContext];
+                [workerContext performBlock:^{
+                    NSManagedObject *userInContext = [workerContext objectWithID:user.objectID];
                     NSFetchRequest *request = [[NSFetchRequest alloc] init];
-                    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Repo" inManagedObjectContext:tempContext];
+                    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Repo" inManagedObjectContext:workerContext];
                     request.entity = entity;
                     request.predicate = [NSPredicate predicateWithFormat:@"user == %@", userInContext];
-                    NSArray *oldRepos = [tempContext executeFetchRequest:request error:nil];
+                    NSArray *oldRepos = [workerContext executeFetchRequest:request error:nil];
                     for (NSManagedObject *oldRepo in oldRepos) {
-                        [tempContext deleteObject:oldRepo];
-                        [CoreDataHelper saveTempContext:tempContext];
+                        [workerContext deleteObject:oldRepo];
+                        [CoreDataHelper saveWorkerContext:workerContext];
                     }
 
                     [userInContext setValue:userName forKey:@"userName"];
                     for (NSDictionary *repo in repos) {
-                        NSManagedObject *repoObject = [NSEntityDescription insertNewObjectForEntityForName:@"Repo" inManagedObjectContext:tempContext];
+                        NSManagedObject *repoObject = [NSEntityDescription insertNewObjectForEntityForName:@"Repo" inManagedObjectContext:workerContext];
                         [repoObject setValue:userInContext forKey:@"user"];
                         [repoObject setValue:userName forKey:@"ownerLogin"];
                         [repoObject setValue:[repo valueForKey:@"id"] forKey:@"repoId"];
@@ -110,11 +110,11 @@
                         [repoObject setValue:[repo valueForKey:@"updated_at"] forKey:@"updateDate"];
                         [repoObject setValue:[repo valueForKey:@"created_at"] forKey:@"createDate"];
                         
-                        [CoreDataHelper saveTempContext:tempContext];
+                        [CoreDataHelper saveWorkerContext:workerContext];
                     };
                     
                     [userInContext setValue:newReposEtag forKey:@"reposEtag"];
-                    [CoreDataHelper saveTempContext:tempContext];
+                    [CoreDataHelper saveWorkerContext:workerContext];
                 }];
             }
         } else {

@@ -18,18 +18,10 @@
 
 @implementation CoreDataHelper
 
-- (id)initWithModelURL:(NSURL *)modelURL storeURL:(NSURL *)storeURL
-{
-    self = [super init];
-    if (self) {
-        self.storeURL = storeURL;
-        self.modelURL = modelURL;
-    }
-    return self;
-}
-
-
 #pragma mark - defaults
+
+static NSURL *_defaultStoreURL;
+static NSURL *_defaultModelURL;
 
 // This set up follows the pattern discussed here: http://www.slideshare.net/xzolian/core-data-with-multiple-managed-object-contexts
 // and here: http://www.cocoanetics.com/2012/07/multi-context-coredata/, attributed to Marcus Zarra.
@@ -40,10 +32,15 @@ static NSPersistentStoreCoordinator *_defaultSqliteCoordinator;
 static NSManagedObjectContext *_defaultWriterContext;
 static NSManagedObjectContext *_defaultMainContext;
 
+static NSPersistentStoreCoordinator *_defaultMemoryCoordinator;
+static NSManagedObjectContext *_defaultScratchMainContext;
+
 + (void)setupDefaultsWithModelURL:(NSURL *)modelURL storeURL:(NSURL *)storeURL
 {
     static dispatch_once_t once;
     dispatch_once(&once, ^{
+        _defaultModelURL = modelURL;
+        _defaultStoreURL = storeURL;
         _defaultModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
         _defaultSqliteCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:_defaultModel];
         NSError* error;
@@ -78,10 +75,30 @@ static NSManagedObjectContext *_defaultMainContext;
     return _defaultMainContext;
 }
 
-+ (NSManagedObjectContext *)tempContext
++ (NSManagedObjectContext *)workerContext
 {
     NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     context.parentContext = _defaultMainContext;
+    return context;
+}
+
++ (NSManagedObjectContext *)defaultScratchMainContext
+{
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{
+        _defaultMemoryCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:_defaultModel];
+        NSError* error;
+        [_defaultMemoryCoordinator addPersistentStoreWithType:NSInMemoryStoreType configuration:nil URL:nil options:nil error:&error];
+        _defaultScratchMainContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+        [_defaultScratchMainContext setPersistentStoreCoordinator:_defaultMemoryCoordinator];
+    });
+    return _defaultScratchMainContext;
+}
+
++ (NSManagedObjectContext *)scratchWorkerContext
+{
+    NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+    context.parentContext = [CoreDataHelper defaultScratchMainContext];
     return context;
 }
 
@@ -125,16 +142,26 @@ static NSManagedObjectContext *_defaultMainContext;
     }];
 }
 
-+ (void)saveTempContext:(NSManagedObjectContext *)tempContext
++ (void)saveWorkerContext:(NSManagedObjectContext *)workerContext
 {
-    NSAssert(tempContext.parentContext == [CoreDataHelper defaultMainContext], @"Temp context must be child of the default main context");
+    NSAssert(workerContext.parentContext == [CoreDataHelper defaultMainContext], @"Worker context must be child of the default main context");
     NSError *error = nil;
-    if (![tempContext save:&error]) {
+    if (![workerContext save:&error]) {
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
         abort();
     }
     
-    [CoreDataHelper saveMainContext:tempContext.parentContext];
+    [CoreDataHelper saveMainContext:workerContext.parentContext];
+}
+
++ (void)saveScratchWorkerContext:(NSManagedObjectContext *)scratchWorkerContext
+{
+    NSAssert(scratchWorkerContext.parentContext == [CoreDataHelper defaultScratchMainContext], @"Worker context must be child of the default scratch main context");
+    NSError *error = nil;
+    if (![scratchWorkerContext save:&error]) {
+        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+        abort();
+    }
 }
 
 #pragma mark - app's documents directory

@@ -13,13 +13,17 @@
 
 + (void)setupDefaultsWithModelURL:(NSURL *)modelURL storeURL:(NSURL *)storeURL;
 + (void)setupDefaultsWithModelName:(NSString *)modelName storeName:(NSString *)storeName;
-+ (NSPersistentStoreCoordinator *)defaultSqliteCoordinator;
-+ (NSManagedObjectContext *)defaultWriterContext;
-+ (NSManagedObjectContext *)defaultMainContext;
-+ (NSManagedObjectContext *)tempContext;
 
++ (NSPersistentStoreCoordinator *)defaultSqliteCoordinator;
+
++ (NSManagedObjectContext *)defaultMainContext;
++ (NSManagedObjectContext *)workerContext;
 + (void)saveMainContext:(NSManagedObjectContext *)mainContext;
-+ (void)saveTempContext:(NSManagedObjectContext *)tempContext;
++ (void)saveWorkerContext:(NSManagedObjectContext *)workerContext;
+
++ (NSManagedObjectContext *)defaultScratchMainContext;
++ (NSManagedObjectContext *)scratchWorkerContext;
++ (void)saveScratchWorkerContext:(NSManagedObjectContext *)scratchWorkerContext;
 
 + (BOOL)itemExistsWithValue:(NSString *)value forAttribute:(NSString *)attributeName inEntity:(NSString *)entityName forContext:(NSManagedObjectContext *)context;
 
