@@ -7,7 +7,7 @@
 //
 
 #import "RepoViewController.h"
-#import "CoreDataManager.h"
+#import "CoreDataHelper.h"
 #import "CoreDataFetcher.h"
 
 @interface RepoViewController () <CoreDataFetcherDelegate>
@@ -82,7 +82,7 @@
                                                              options:NSJSONReadingAllowFragments
                                                                error:&jsonError];
             if (!jsonError) {
-                NSManagedObjectContext *tempContext = [CoreDataManager tempContext];
+                NSManagedObjectContext *tempContext = [CoreDataHelper tempContext];
                 [tempContext performBlock:^{
                     NSManagedObject *userInContext = [tempContext objectWithID:user.objectID];
                     NSFetchRequest *request = [[NSFetchRequest alloc] init];
@@ -92,7 +92,7 @@
                     NSArray *oldRepos = [tempContext executeFetchRequest:request error:nil];
                     for (NSManagedObject *oldRepo in oldRepos) {
                         [tempContext deleteObject:oldRepo];
-                        [CoreDataManager saveTempContext:tempContext];
+                        [CoreDataHelper saveTempContext:tempContext];
                     }
 
                     [userInContext setValue:userName forKey:@"userName"];
@@ -110,11 +110,11 @@
                         [repoObject setValue:[repo valueForKey:@"updated_at"] forKey:@"updateDate"];
                         [repoObject setValue:[repo valueForKey:@"created_at"] forKey:@"createDate"];
                         
-                        [CoreDataManager saveTempContext:tempContext];
+                        [CoreDataHelper saveTempContext:tempContext];
                     };
                     
                     [userInContext setValue:newReposEtag forKey:@"reposEtag"];
-                    [CoreDataManager saveTempContext:tempContext];
+                    [CoreDataHelper saveTempContext:tempContext];
                 }];
             }
         } else {
@@ -153,7 +153,7 @@
         return _fetchedResultsController;
     }
     
-    NSManagedObjectContext *mainContext = [CoreDataManager defaultMainContext];
+    NSManagedObjectContext *mainContext = [CoreDataHelper defaultMainContext];
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"Repo" inManagedObjectContext:mainContext];

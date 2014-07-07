@@ -8,7 +8,7 @@
 
 #import "UserViewController.h"
 #import "RepoViewController.h"
-#import "CoreDataManager.h"
+#import "CoreDataHelper.h"
 #import "CoreDataFetcher.h"
 
 @interface UserViewController () <CoreDataFetcherDelegate>
@@ -84,8 +84,8 @@
 
 - (void)createNewUser:(NSString *)userName
 {
-    NSManagedObjectContext *mainContext = [CoreDataManager defaultMainContext];
-    if (![CoreDataManager itemExistsWithValue:userName forAttribute:@"userName" inEntity:@"User" forContext:mainContext]) {
+    NSManagedObjectContext *mainContext = [CoreDataHelper defaultMainContext];
+    if (![CoreDataHelper itemExistsWithValue:userName forAttribute:@"userName" inEntity:@"User" forContext:mainContext]) {
         static NSString * gitHubUsers = @"https://api.github.com/users/%@";
         NSURLSession *session = [NSURLSession sharedSession];
         [[session dataTaskWithURL:[NSURL URLWithString:[NSString stringWithFormat:gitHubUsers, userName]]
@@ -103,14 +103,14 @@
                             NSString *avatarURL = [userDic objectForKey:@"avatar_url"];
                             NSString *userEtag = [httpResponse.allHeaderFields objectForKey:@"ETag"];
                             
-                            NSManagedObjectContext *tempContext = [CoreDataManager tempContext];
+                            NSManagedObjectContext *tempContext = [CoreDataHelper tempContext];
                             [tempContext performBlock:^{
                                 NSManagedObject *userObject = [NSEntityDescription insertNewObjectForEntityForName:@"User" inManagedObjectContext:tempContext];
                                 [userObject setValue:userName forKey:@"userName"];
                                 [userObject setValue:avatarURL forKey:@"avatarURL"];
                                 [userObject setValue:userEtag forKey:@"userEtag"];
                                 
-                                [CoreDataManager saveTempContext:tempContext];
+                                [CoreDataHelper saveTempContext:tempContext];
                             }];
                         }
                     } else {
@@ -169,7 +169,7 @@
         return _fetchedResultsController;
     }
     
-    NSManagedObjectContext *mainContext = [CoreDataManager defaultMainContext];
+    NSManagedObjectContext *mainContext = [CoreDataHelper defaultMainContext];
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"User" inManagedObjectContext:mainContext];
@@ -194,7 +194,7 @@
 
 - (NSUndoManager*)undoManager
 {
-    return [CoreDataManager defaultMainContext].undoManager;
+    return [CoreDataHelper defaultMainContext].undoManager;
 }
 
 @end

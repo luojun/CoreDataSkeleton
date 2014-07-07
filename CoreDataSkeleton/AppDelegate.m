@@ -8,7 +8,7 @@
 
 #import "AppDelegate.h"
 #import "UserViewController.h"
-#import "CoreDataManager.h"
+#import "CoreDataHelper.h"
 
 @interface AppDelegate ()
             
@@ -19,9 +19,7 @@
             
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // this set up needs to happen first
-    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"CoreDataSkeleton" withExtension:@"momd"];
-    NSURL *storeURL = [[AppDelegate applicationDocumentsDirectory] URLByAppendingPathComponent:@"CoreDataSkeleton.sqlite"];
-    [CoreDataManager setupDefaultsWithModelURL:modelURL storeURL:storeURL];
+    [CoreDataHelper setupDefaultsWithModelName:@"CoreDataSkeleton" storeName:@"CoreDataSkeleton.sqlite"];
     
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
     UINavigationController *navigationController = [splitViewController.viewControllers lastObject];

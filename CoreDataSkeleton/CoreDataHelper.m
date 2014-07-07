@@ -1,14 +1,14 @@
 //
 //  CoreDataManager.m
-//  CoreDataSkeleton
+//  CoreDataSkeleton (https://github.com/luojun/CoreDataSkeleton)
 //
 //  Created by Jun Luo on 2014-07-06.
 //  Copyright (c) 2014 Jun Luo. All rights reserved.
 //
 
-#import "CoreDataManager.h"
+#import "CoreDataHelper.h"
 
-@interface CoreDataManager ()
+@interface CoreDataHelper ()
 
 @property (nonatomic,strong,readwrite) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic,strong) NSURL *modelURL;
@@ -16,7 +16,7 @@
 
 @end
 
-@implementation CoreDataManager
+@implementation CoreDataHelper
 
 - (id)initWithModelURL:(NSURL *)modelURL storeURL:(NSURL *)storeURL
 {
@@ -54,6 +54,13 @@ static NSManagedObjectContext *_defaultMainContext;
         _defaultMainContext.parentContext = _defaultWriterContext;
         _defaultMainContext.undoManager = [[NSUndoManager alloc] init];
     });
+}
+
++ (void)setupDefaultsWithModelName:(NSString *)modelName storeName:(NSString *)storeName
+{
+    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:modelName withExtension:@"momd"];
+    NSURL *storeURL = [[CoreDataHelper applicationDocumentsDirectory] URLByAppendingPathComponent:storeName];
+    [CoreDataHelper setupDefaultsWithModelURL:modelURL storeURL:storeURL];
 }
 
 + (NSPersistentStoreCoordinator *)defaultSqliteCoordinator
@@ -100,7 +107,7 @@ static NSManagedObjectContext *_defaultMainContext;
 
 + (void)saveMainContext:(NSManagedObjectContext *)mainContext
 {
-    NSAssert(mainContext == [CoreDataManager defaultMainContext], @"Context must be the default main context");
+    NSAssert(mainContext == [CoreDataHelper defaultMainContext], @"Context must be the default main context");
     [mainContext performBlock:^{
         NSError *error = nil;
         if (![mainContext save:&error]) {
@@ -120,15 +127,21 @@ static NSManagedObjectContext *_defaultMainContext;
 
 + (void)saveTempContext:(NSManagedObjectContext *)tempContext
 {
-    NSAssert(tempContext.parentContext == [CoreDataManager defaultMainContext], @"Temp context must be child of the default main context");
+    NSAssert(tempContext.parentContext == [CoreDataHelper defaultMainContext], @"Temp context must be child of the default main context");
     NSError *error = nil;
     if (![tempContext save:&error]) {
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
         abort();
     }
     
-    [CoreDataManager saveMainContext:tempContext.parentContext];
+    [CoreDataHelper saveMainContext:tempContext.parentContext];
 }
 
+#pragma mark - app's documents directory
+
++ (NSURL *)applicationDocumentsDirectory
+{
+    return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+}
 
 @end
