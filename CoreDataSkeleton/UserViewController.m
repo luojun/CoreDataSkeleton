@@ -62,7 +62,7 @@
     self.fetcher.reuseIdentifier = @"Cell";
 }
 
-#pragma mark - add GitHub user
+#pragma mark - GitHub user
 
 - (void)addNewUser:(id)sender {
     UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"Add a GitHub User" message:nil delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"OK", nil];
@@ -84,7 +84,7 @@
 
 - (void)createNewUser:(NSString *)userName
 {
-    NSManagedObjectContext *mainContext = self.fetchedResultsController.managedObjectContext;
+    NSManagedObjectContext *mainContext = [CoreDataManager defaultMainContext];
     if (![CoreDataManager itemExistsWithValue:userName forAttribute:@"userName" inEntity:@"User" forContext:mainContext]) {
         static NSString * gitHubUsers = @"https://api.github.com/users/%@";
         NSURLSession *session = [NSURLSession sharedSession];
@@ -161,28 +161,19 @@
     }
     
     NSManagedObjectContext *mainContext = [CoreDataManager defaultMainContext];
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"User" inManagedObjectContext:mainContext];
-    [fetchRequest setEntity:entity];
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
     
-    [fetchRequest setFetchBatchSize:20];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"User" inManagedObjectContext:mainContext];
+    request.entity = entity;
+    request.fetchBatchSize = 20;
     
     NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"userName" ascending:YES];
     NSArray *sortDescriptors = @[sortDescriptor];
-    [fetchRequest setSortDescriptors:sortDescriptors];
+    request.sortDescriptors = sortDescriptors;
     
-    NSFetchedResultsController *aFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:mainContext sectionNameKeyPath:nil cacheName:@"Master"];
-    aFetchedResultsController.delegate = self;
-    self.fetchedResultsController = aFetchedResultsController;
-    
-    NSError *error = nil;
-    if (![self.fetchedResultsController performFetch:&error]) {
-        // Replace this implementation with code to handle the error appropriately.
-        // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-        abort();
-    }
+    NSFetchedResultsController *controller = [[NSFetchedResultsController alloc] initWithFetchRequest:request managedObjectContext:mainContext sectionNameKeyPath:nil cacheName:@"User"];
+    _fetchedResultsController = controller;
+
     return _fetchedResultsController;
 }
 

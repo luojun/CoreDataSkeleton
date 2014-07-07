@@ -9,10 +9,9 @@
 #import <UIKit/UIKit.h>
 #import <CoreData/CoreData.h>
 
-@interface RepoViewController : UIViewController <UISplitViewControllerDelegate>
+@interface RepoViewController : UITableViewController <UISplitViewControllerDelegate>
 
 @property (strong, nonatomic) NSManagedObject *detailObject;
-@property (weak, nonatomic) IBOutlet UILabel *detailDescriptionLabel;
 
 @end
 
