@@ -75,6 +75,9 @@
 {
     if (type == NSFetchedResultsChangeInsert) {
         [self.tableView insertRowsAtIndexPaths:@[newIndexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+    } else if (type == NSFetchedResultsChangeUpdate) {
+        [self.delegate configureCell:[self.tableView cellForRowAtIndexPath:indexPath] withObject:anObject];
+        [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
     } else if (type == NSFetchedResultsChangeMove) {
         [self.tableView moveRowAtIndexPath:indexPath toIndexPath:newIndexPath];
     } else if (type == NSFetchedResultsChangeDelete) {
@@ -89,7 +92,7 @@
     NSAssert(_fetchedResultsController == nil, @"TODO: you can currently only assign this property once");
     _fetchedResultsController = fetchedResultsController;
     fetchedResultsController.delegate = self;
-    [fetchedResultsController performFetch:NULL];
+    [fetchedResultsController performFetch:nil];
 }
 
 
@@ -107,7 +110,7 @@
         self.fetchedResultsController.delegate = nil;
     } else {
         self.fetchedResultsController.delegate = self;
-        [self.fetchedResultsController performFetch:NULL];
+        [self.fetchedResultsController performFetch:nil];
         [self.tableView reloadData];
     }
 }
