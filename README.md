@@ -78,4 +78,4 @@ Known Issues
 ------------
 
 * The app does not play well with GitHub API's rate limiting.
-
+* Much to be refactored (always the case) Specifically, UserViewController & RepoViewController could be made better.
