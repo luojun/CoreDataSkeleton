@@ -71,6 +71,8 @@ reported here:
 
 * [Core Data Conconcurrency Debugging](http://oleb.net/blog/2014/06/core-data-concurrency-debugging/)
 
+seems real and seems to remain there in iOS 8 beta 3.
+
 The new iOS 8 NSAsynchronousFetchRequst was also tried, but it simply couldn't be made to work in the current iOS 8 beta.
 It would be something good to include in a future update to this project.
 
